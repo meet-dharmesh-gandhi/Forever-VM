@@ -17,10 +17,21 @@
 #define INFO WHT
 #define SUCCESS GRN
 #define IMP CYN
+#define WARN YLW
 
 enum PacketType {
 	HEARTBEAT_PACKET,
 };
+
+enum MouseButtonType {
+	LEFT,
+	MIDDLE,
+	RIGHT,
+};
+
+enum InputType { KEYBOARD, MOUSE };
+
+enum MousePressedType { UP, DOWN };
 
 enum Mode { GATEWAY, WORKER };
 
@@ -47,6 +58,10 @@ enum Mode { GATEWAY, WORKER };
 // keep strictly as ddd.ddd.ddd.ddd format
 #define GATEWAY_IP "010.020.014.032"
 
+#define TEMPLATE_XML_FILE_PATH "./desc.xml"
+
+#define QEMU_CMD_TEMPLATE_FILE_PATH "./cmd.txt"
+
 #define MAX_FILE_SIZE 100000 // in bytes
 #define MAX_FILES 30
 #define MAX_INPUTS 30
@@ -54,6 +69,13 @@ enum Mode { GATEWAY, WORKER };
 #define MAX_FILENAME_SIZE 256 // in bytes
 #define MAX_INOTIFY_WATCH_DESCRIPTORS 1000
 #define MAX_PATH_SIZE 252
+#define MAX_DOMAINS 10
+#define MAX_VCPUS 10
+#define MAX_VMEM INT16_MAX
+#define MAX_FRAME_DELAY 33 // in milliseconds (30 FPS)
+
+#define MAX_MOUSE_COORD INT16_MAX
+#define MIN_MOUSE_COORD 0
 
 #define EXPIRE_PERIOD (HEARTBEAT_INTERVAL * MAX_MISSES)
 #define TASK_EXPIRE_PERIOD 600000 // 10 minutes (600,000 milliseconds)

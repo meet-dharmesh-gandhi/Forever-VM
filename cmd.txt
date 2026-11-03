@@ -1,0 +1,28 @@
+{
+    "execute":"input-send-event",
+    "arguments":{
+        "events":[
+            {
+                "type":"abs",
+                "data":{
+                    "axis":"x",
+                    "value":%d
+                }
+            },
+            {
+                "type":"abs",
+                "data":{
+                    "axis":"y",
+                    "value":%d
+                }
+            },
+            {
+                "type":"btn",
+                "data":{
+                    "down":%s,
+                    "button":"%s"
+                }
+            }
+        ]
+    }
+}
