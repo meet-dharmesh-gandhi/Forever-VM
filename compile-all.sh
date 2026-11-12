@@ -1,4 +1,4 @@
-cd ~/"Desktop/Code Files/Forever-VM/src"
+cd ~/"Desktop/Code Files/Forever-VM/src-main"
 
 node-gyp rebuild
 

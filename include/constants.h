@@ -35,6 +35,14 @@ enum MousePressedType { UP, DOWN };
 
 enum Mode { GATEWAY, WORKER };
 
+enum NodeTypes {
+	GATEWAY_NODE,
+	MONITOR_NODE,
+	ASSIGNER_NODE,
+	WORKER_NODE,
+	EMPTY_NODE
+};
+
 #define YES -1
 #define NO -2
 #define UNKNOWN -3
@@ -50,16 +58,24 @@ enum Mode { GATEWAY, WORKER };
 #define ASSIGNER_CAPACITY 5
 #define WORKER_CAPACITY 5
 #define GATEWAY_CAPACITY 20
+#define NODE_CAPACITY 20
 #define STREAM_WAITING_QUEUE 10
 #define ARENA_SIZE 262144
 #define MAX_EVENTS                                                             \
 	6 // accounts for EPOLLIN, EPOLLOUT, EPOLLRDHUP, EPOLLHUP, EPOLLET, EPOLLERR
 
-// keep strictly as ddd.ddd.ddd.ddd format
-#define GATEWAY_IP "010.020.014.032"
+#define GATEWAY_IP "10.20.24.62"
 
 #define TEMPLATE_XML_FILE_PATH "./desc.xml"
+#define MEMORY_TEMPLATE_XML_FILE_PATH "./storage-desc.xml"
+#define READ_ONLY_VOL_NAME "base-ubuntu.qcow2"
+#define POOL_TEMPLATE_XML_FILE_PATH "./pool-desc.xml"
+#define METADATA_TEMPLATE_FILE_PATH "./meta-data"
+#define USERDATA_TEMPLATE_FILE_PATH "./user-data"
+#define METADATA_STORAGE_PATH "/tmp/forever-vm/meta/"
+#define USERDATA_STORAGE_PATH "/tmp/forever-vm/user/"
 
+#define QEMU_EMULATOR_FILE "qemu-system-x86_64"
 #define QEMU_CMD_TEMPLATE_FILE_PATH "./cmd.txt"
 
 #define MAX_FILE_SIZE 100000 // in bytes
@@ -71,8 +87,10 @@ enum Mode { GATEWAY, WORKER };
 #define MAX_PATH_SIZE 252
 #define MAX_DOMAINS 10
 #define MAX_VCPUS 10
+#define MAX_VDISK 100 // In GibiBytes
 #define MAX_VMEM INT16_MAX
 #define MAX_FRAME_DELAY 33 // in milliseconds (30 FPS)
+#define MAX_PORT 65536
 
 #define MAX_MOUSE_COORD INT16_MAX
 #define MIN_MOUSE_COORD 0

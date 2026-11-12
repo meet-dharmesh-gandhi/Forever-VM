@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Forever-VM Framebuffer Stream</title>
+		<style>
+			body {
+				margin: 0;
+				padding: 20px;
+				background-color: #121212;
+				color: #e0e0e0;
+				font-family:
+					system-ui,
+					-apple-system,
+					sans-serif;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+			header {
+				margin-bottom: 12px;
+				text-align: center;
+			}
+			#status {
+				font-size: 0.9rem;
+				color: #9e9e9e;
+			}
+			canvas {
+				border: 2px solid #333;
+				background-color: #000;
+				box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+				max-width: 100%;
+				height: auto;
+				outline: none;
+				cursor: crosshair;
+			}
+			canvas:focus {
+				border-color: #4caf50;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h2>KVM VM Framebuffer Stream</h2>
+			<div id="status">Connecting to ws://10.20.24.62:3000...</div>
+		</header>
+
+		<div id="spice-screen"></div>
+
+		<script
+			src="spice-html5/src/spicearraybuffer.js"
+			type="module"
+		></script>
+		<script src="spice-html5/src/main.js" type="module"></script>
+		<script type="module">
+			import { SpiceMainConn } from "./spice-html5/src/main.js";
+			const statusEl = document.getElementById("status");
+
+			async function connect() {
+				const ip = await fetch("http://10.20.24.62:3000").then((res) =>
+					res.text(),
+				);
+				console.log("ip:", ip);
+
+				const port = await fetch(`http://${ip}:3000`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						vcpus: 2,
+						memory: 2,
+						disk: 10,
+						username: "meet",
+						password: "pass",
+					}),
+				}).then((res) => res.json());
+				console.log("port:", port);
+
+				if (!port?.port) {
+					console.log("No port found!");
+					return;
+				}
+
+				const scs = new SpiceMainConn({
+					uri: `ws://${ip}:3000/${port.port}`,
+					password: "",
+					screen_id: "spice-screen",
+					onerror: (e) => console.error("error in spice", e),
+					onsuccess: () => console.log("spice succeeded"),
+				});
+			}
+
+			connect();
+		</script>
+	</body>
+</html>

@@ -10,6 +10,7 @@
 #include "print.h"
 #include "utils.h"
 
+#include <arpa/inet.h>
 #include <errno.h>
 #include <execinfo.h>
 #include <fcntl.h>

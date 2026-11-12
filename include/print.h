@@ -3,7 +3,8 @@
 #include <netdb.h>
 #include <stdarg.h>
 
-extern void printc(char *color, const char *prefix, const char *format, ...);
+extern void printc(char *color, const char *prefix, const char *format, ...)
+	__attribute__((format(printf, 3, 4)));
 extern void printcRaw(char *color, const char *prefix, const char *format,
 					  va_list args);
 extern char *getPrintableIP(struct sockaddr_in *addr);

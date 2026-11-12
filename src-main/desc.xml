@@ -1,0 +1,44 @@
+<domain type='kvm'>
+  <name>%s</name>
+  <memory unit='GiB'>%d</memory>
+  <currentMemory unit='GiB'>%d</currentMemory>
+  <vcpu placement='static'>%d</vcpu>
+  <os firmware='efi'>
+    <type arch='x86_64' machine='q35'>%s</type>
+    <smbios mode='sysinfo'/>
+    <boot dev='hd'/>
+    <bootmenu enable='yes'/>
+  </os>
+  <sysinfo type='smbios'>
+    <system>
+      <entry name='serial'>ds=nocloud-net;s=http://%s:3000/cloud-init/%s/%s/%s/</entry>
+    </system>
+  </sysinfo>
+  <features>
+    <acpi/>
+    <apic/>
+  </features>
+  <cpu mode='host-passthrough' check='none' migratable='on'/>
+  <devices>
+    <emulator>/usr/bin/%s</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2' discard='unmap'/>
+      <source file='%s'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <interface type='network'>
+      <source network='default'/>
+      <model type='virtio'/>
+    </interface>
+    <input type='tablet' bus='usb'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='spice' port='%d' autoport='yes' listen='127.0.0.1'>
+      <image compression='auto_glz'/>
+      <streaming mode='filter'/>
+    </graphics>
+    <video>
+      <model type='qxl' ram='65536' vram='65536' heads='1'/>
+    </video>
+  </devices>
+</domain>

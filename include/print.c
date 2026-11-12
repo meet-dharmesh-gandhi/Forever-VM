@@ -20,7 +20,7 @@ void printcRaw(char *color, const char *prefix, const char *format,
 		fColor = GRN;
 	}
 
-	printf(fColor);
+	printf("%s", fColor);
 	printf("%ld [%s] ", getCurrTime(), prefix);
 
 	vprintf(format, args);

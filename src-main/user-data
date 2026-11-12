@@ -1,0 +1,7 @@
+users:
+    - name: %s
+    - plain_text_passwd: "%s"
+      lock_passwd: false
+      sudo: ALL=(ALL) NOPASSWD:ALL
+      shell: /bin/bash
+chpasswd: { expire: False }
