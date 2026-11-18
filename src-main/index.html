@@ -38,12 +38,63 @@
 			canvas:focus {
 				border-color: #4caf50;
 			}
+
+			#user-inputs {
+				display: flex;
+				flex-direction: column;
+				gap: 10px;
+				align-items: start;
+
+				#btn-div {
+					width: 100%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+			}
 		</style>
 	</head>
 	<body>
 		<header>
 			<h2>KVM VM Framebuffer Stream</h2>
-			<div id="status">Connecting to ws://10.20.24.62:3000...</div>
+			<div id="status">Connect to ws://10.20.24.62:3000</div>
+			<div id="user-inputs">
+				<div>
+					<label for="username">Username:</label>
+					<input type="text" id="username" />
+				</div>
+				<div>
+					<label for="password">Password:</label>
+					<input type="text" id="password" />
+				</div>
+				<div>
+					<label for="vm-name">VM Name:</label>
+					<input type="text" id="vm-name" />
+				</div>
+				<div>
+					<label for="vcpus">CPUs:</label>
+					<input type="number" id="vcpus" />
+				</div>
+				<div>
+					<label for="memory">Memory (In GB):</label>
+					<input type="number" id="memory" />
+				</div>
+				<div>
+					<label for="disk">Disk (in GB):</label>
+					<input type="number" id="disk" />
+				</div>
+				<div>
+					<label for="vm-username">VM Username:</label>
+					<input type="text" id="vm-username" />
+				</div>
+				<div>
+					<label for="vm-password">VM Password:</label>
+					<input type="text" id="vm-password" />
+				</div>
+				<div id="btn-div">
+					<button id="user-btn">Start VM</button>
+				</div>
+			</div>
 		</header>
 
 		<div id="spice-screen"></div>
@@ -55,44 +106,168 @@
 		<script src="spice-html5/src/main.js" type="module"></script>
 		<script type="module">
 			import { SpiceMainConn } from "./spice-html5/src/main.js";
-			const statusEl = document.getElementById("status");
 
-			async function connect() {
-				const ip = await fetch("http://10.20.24.62:3000").then((res) =>
-					res.text(),
+			document.addEventListener("DOMContentLoaded", () => {
+				const statusEl = document.getElementById("status");
+				const usernameInput = document.getElementById("username");
+				const passwordInput = document.getElementById("password");
+				const vmNameInput = document.getElementById("vm-name");
+				const vcpusInput = document.getElementById("vcpus");
+				const memoryInput = document.getElementById("memory");
+				const diskInput = document.getElementById("disk");
+				const vmUsernameInput = document.getElementById("vm-username");
+				const vmPasswordInput = document.getElementById("vm-password");
+				const userBtn = document.getElementById("user-btn");
+
+				console.log(
+					statusEl,
+					usernameInput,
+					passwordInput,
+					vmNameInput,
+					vcpusInput,
+					memoryInput,
+					diskInput,
+					vmUsernameInput,
+					vmPasswordInput,
+					userBtn,
 				);
-				console.log("ip:", ip);
+				let start = true;
+				let scs;
 
-				const port = await fetch(`http://${ip}:3000`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						vcpus: 2,
-						memory: 2,
-						disk: 10,
-						username: "meet",
-						password: "pass",
-					}),
-				}).then((res) => res.json());
-				console.log("port:", port);
+				async function connect(
+					username,
+					password,
+					vmName,
+					vcpus,
+					memory,
+					disk,
+					vmUsername,
+					vmPassword,
+				) {
+					const ip = await fetch("http://10.20.24.62:3000").then(
+						(res) => res.text(),
+					);
+					console.log("ip:", ip);
 
-				if (!port?.port) {
-					console.log("No port found!");
-					return;
+					console.log("sending:", {
+						username,
+						password,
+						vmName,
+						vcpus,
+						memory,
+						disk,
+						vmUsername,
+						vmPassword,
+					});
+
+					const port = await fetch(`http://${ip}:3000`, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							username,
+							password,
+							vmName,
+							vcpus,
+							memory,
+							disk,
+							vmUsername,
+							vmPassword,
+						}),
+					}).then((res) => res.json());
+					console.log("port:", port);
+
+					if (!port?.port) {
+						console.log("No port found!");
+						return;
+					}
+
+					scs = new SpiceMainConn({
+						uri: `ws://${ip}:3000/${port.port}`,
+						password: "",
+						screen_id: "spice-screen",
+						onerror: (e) => {
+							console.error("error in spice", e);
+							statusEl.textContent =
+								"Error connecting to ws://10.20.24.62:3000";
+							userBtn.textContent = "Error starting VM";
+						},
+						onsuccess: () => {
+							console.log("spice succeeded");
+							statusEl.textContent =
+								"Connecting to ws://10.20.24.62:3000...";
+							userBtn.textContent = "Stop VM";
+						},
+					});
 				}
 
-				const scs = new SpiceMainConn({
-					uri: `ws://${ip}:3000/${port.port}`,
-					password: "",
-					screen_id: "spice-screen",
-					onerror: (e) => console.error("error in spice", e),
-					onsuccess: () => console.log("spice succeeded"),
-				});
-			}
+				userBtn.addEventListener("click", () => {
+					console.log("clicked");
+					if (start) {
+						console.log("starting");
+						const username = usernameInput.value;
+						const password = passwordInput.value;
+						const vmName = vmNameInput.value;
+						const vcpus = vcpusInput.value;
+						const memory = memoryInput.value;
+						const disk = diskInput.value;
+						const vmUsername = vmUsernameInput.value;
+						const vmPassword = vmPasswordInput.value;
 
-			connect();
+						if (
+							!(
+								username &&
+								password &&
+								vmName &&
+								vcpus &&
+								memory &&
+								disk &&
+								vmUsername &&
+								vmPassword
+							)
+						) {
+							console.log(
+								"Something missing",
+								username,
+								password,
+								vmName,
+								vcpus,
+								memory,
+								disk,
+								vmUsername,
+								vmPassword,
+							);
+							return;
+						}
+
+						connect(
+							username,
+							password,
+							vmName,
+							vcpus,
+							memory,
+							disk,
+							vmUsername,
+							vmPassword,
+						);
+
+						start = false;
+
+						statusEl.textContent =
+							"Connecting to ws://10.20.24.62:3000...";
+						userBtn.textContent = "Starting VM...";
+					} else if (scs) {
+						scs.stop();
+						scs = null;
+						start = true;
+
+						statusEl.textContent =
+							"Connect to ws://10.20.24.62:3000";
+						userBtn.textContent = "Start VM";
+					}
+				});
+			});
 		</script>
 	</body>
 </html>

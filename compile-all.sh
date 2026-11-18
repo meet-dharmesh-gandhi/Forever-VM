@@ -1,5 +1,5 @@
 cd ~/"Desktop/Code Files/Forever-VM/src-main"
 
-node-gyp rebuild
+npx node-gyp rebuild
 
 echo "Done"

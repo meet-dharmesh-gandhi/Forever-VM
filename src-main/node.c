@@ -364,7 +364,7 @@ napi_value GetNodeIP(napi_env env, napi_callback_info info) {
 
 		// send the ip of the lowest loaded node
 		int lowest = MAX_DOMAINS;
-		struct Node *n;
+		struct Node *n = NULL;
 		for (int i = 0; i < GATEWAY_CAPACITY; i++) {
 			if (nodes[i].load >= 0 && lowest > nodes[i].load) {
 				lowest = nodes[i].load;
@@ -374,7 +374,7 @@ napi_value GetNodeIP(napi_env env, napi_callback_info info) {
 
 		printc(INFO, "GetNodeIP", "lowest: %d\n", lowest);
 
-		if (lowest < MAX_DOMAINS) {
+		if (lowest < MAX_DOMAINS && n != NULL) {
 			// create the message to pass
 			napi_value ip_str;
 			status =
@@ -384,7 +384,7 @@ napi_value GetNodeIP(napi_env env, napi_callback_info info) {
 				return napiBool(env, 0);
 			}
 
-			nodes[lowest].load++;
+			n->load++;
 			printc(INFO, "GetNodeIP", "ip: %s\n", n->ip);
 			return ip_str;
 		}
@@ -450,20 +450,20 @@ void handle_heartbeats(uv_poll_t *handle, int status, int events) {
 			if (packet_type == HEARTBEAT_PACKET) {
 				// received a heartbeat from a node
 				for (int i = 0; i < GATEWAY_CAPACITY; i++) {
-					if (nodes[i].load < 0 ||
-						(nodes[i].lastAnswered > 0 &&
-						 getCurrTime() - nodes[i].lastAnswered >
-							 EXPIRE_PERIOD)) {
+					if (nodes[i].load >= 0 &&
+						strcmp(nodes[i].ip, getPrintableIP(addr)) == 0) {
+						nodes[i].load = hb->load;
+						nodes[i].lastAnswered = getCurrTime();
+						break;
+					} else if (nodes[i].load < 0 ||
+							   (nodes[i].lastAnswered > 0 &&
+								getCurrTime() - nodes[i].lastAnswered >
+									EXPIRE_PERIOD)) {
 						// new node and an empty gap
 						memcpy(nodes[i].ip, getPrintableIP(addr),
 							   INET_ADDRSTRLEN);
 						printc(INFO, "handle_heartbeats", "new node: %s\n",
 							   nodes[i].ip);
-						nodes[i].load = hb->load;
-						nodes[i].lastAnswered = getCurrTime();
-						break;
-					} else if (nodes[i].load >= 0 &&
-							   strcmp(nodes[i].ip, getPrintableIP(addr)) == 0) {
 						nodes[i].load = hb->load;
 						nodes[i].lastAnswered = getCurrTime();
 						break;

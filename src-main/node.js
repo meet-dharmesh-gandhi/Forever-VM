@@ -5,6 +5,7 @@ const cG = require("./build/Release/node.node");
 const net = require("net");
 const express = require("express");
 const cors = require("cors");
+const { createHash } = require("crypto");
 
 dotenv.config();
 
@@ -97,45 +98,64 @@ app.get("/", (req, res) => {
 	}
 });
 
+function isNumericString(value) {
+	if (typeof value !== "string") return false;
+	if (value.trim() === "") return false;
+	return Number.isFinite(Number(value));
+}
+
 app.post("/", (req, res) => {
 	try {
-		const jsonData = req.body;
-		console.log("jsonData:", jsonData);
+		const {
+			username,
+			password,
+			vmName,
+			memory,
+			vcpus,
+			disk,
+			vmUsername,
+			vmPassword,
+		} = req.body;
 		const port = ports.indexOf(0);
 
 		if (
 			port != -1 &&
-			jsonData.memory &&
-			jsonData.vcpus &&
-			jsonData.disk &&
-			jsonData.username &&
-			jsonData.password
+			username &&
+			password &&
+			vmName &&
+			vcpus &&
+			isNumericString(vcpus) &&
+			memory &&
+			isNumericString(memory) &&
+			disk &&
+			isNumericString(disk) &&
+			vmUsername &&
+			vmPassword
 		) {
 			ports[port] = 1;
-			const domainName = `VM-${port + START_PORT}`;
-			console.log("domainName:", domainName);
+			const domainName = `${username}-${createHash("sha256").update(password).digest("hex")}-${vmName}`;
 			const created = cG.createVM(
 				domainName,
-				jsonData.vcpus,
-				jsonData.memory,
-				jsonData.disk,
+				Number(vcpus),
+				Number(memory),
+				Number(disk),
 				port + START_PORT,
-				jsonData.username,
-				jsonData.password,
+				vmUsername,
+				vmPassword,
 			);
 
 			if (!created) {
 				console.log(
 					"Could not create VM with memory:",
-					jsonData.memory,
+					memory,
 					"and vcpus:",
-					jsonData.vcpus,
+					vcpus,
 					"and vdisk:",
-					jsonData.disk,
+					disk,
 					"and username:",
-					jsonData.username,
+					username,
 					"and password:",
-					jsonData.password,
+					password,
 				);
 				res.send({
 					status: "vm creation error",
@@ -150,6 +170,7 @@ app.post("/", (req, res) => {
 			return;
 		}
 
+		console.log(req.body);
 		res.send({
 			status: "unknown error",
 		});
