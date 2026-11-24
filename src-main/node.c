@@ -331,8 +331,9 @@ napi_value CreateVM(napi_env env, napi_callback_info info) {
 	printc(INFO, "CreateVM", "pwd: %s\n", password);
 
 	if (domains < MAX_DOMAINS) {
-		if (getVM(domainName, vcpus, memory, disk, port, userName, password) ==
-			NULL) {
+		int returnedPort =
+			getVM(domainName, vcpus, memory, disk, port, userName, password);
+		if (returnedPort == -1) {
 			printc(RED, "CreateVM", "Could not create VM!\n");
 			return napiUndefined(env);
 		}
@@ -406,7 +407,7 @@ NAPI_MODULE(NODE_GYP_GATEWAY, Start);
 // =============================================================
 
 /**
- * Gets the virDomainPtr if the VM exists
+ * Gets the virDomainPtr of the VM if it exists
  * else it creates a new VM and gives the virDomainPtr
  */
 virDomainPtr getVM(char *domain_name, int vcpus, int memory, int disk, int port,
@@ -849,7 +850,7 @@ virStorageVolPtr getVol(char *vol_name, char *unit, int storage,
 				   vol_name);
 			return NULL;
 		}
-		vsvp = virStorageVolCreateXMLFrom(pool, xml, readOnlyImage, 0);
+		vsvp = virStorageVolCreateXML(pool, xml, 0);
 		if (vsvp == NULL) {
 			printc(RED, "getVol", "Could not create vol with name %s\n",
 				   vol_name);
@@ -925,9 +926,10 @@ int getStorageXml(char **xml, char *vol_name, char *unit, int storage) {
 	}
 	// this is the length of all strings combined (the ints will also be
 	// converted to strings later on)
-	int paramsSize = strlen(vol_name) + strlen(unit) + getStrLength(storage);
+	int paramsSize = strlen(vol_name) + strlen(unit) + getStrLength(storage) +
+					 strlen(READ_ONLY_VOL_NAME);
 	// this includes %d and %s
-	int placeholdersSize = 3 * 2;
+	int placeholdersSize = 4 * 2;
 	int required_size = fileSize - placeholdersSize + paramsSize;
 	*xml = malloc((size_t)(required_size + 1));
 	char *template = malloc((size_t)(fileSize));
@@ -953,8 +955,8 @@ int getStorageXml(char **xml, char *vol_name, char *unit, int storage) {
 	template[last] = '\0';
 	printc(INFO, "getStorageXml", "template:\n%s\n", template);
 
-	int written =
-		snprintf(*xml, required_size, template, vol_name, unit, storage);
+	int written = snprintf(*xml, required_size, template, vol_name, unit,
+						   storage, READ_ONLY_VOL_NAME);
 	if (written > required_size) {
 		// space was not enough, warn
 		printc(WARN, "getStorageXml",

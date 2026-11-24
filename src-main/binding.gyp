@@ -10,10 +10,22 @@
                         "../include/print.c",
                         "../include/utils.c",
                         ],
+            "include_dirs": [
+                "/usr/include/libxml2",
+            ],
+                        # "cflags": [
+                        #     "-fplugin=../../miscellaneous/Safe-C/build/lib/safe_c.so",
+                        #     "-fplugin-arg-safe_c-mode=warn"
+                        # ],
+                        # "cflags_c": [
+                        #     "-fplugin=../../miscellaneous/Safe-C/build/lib/safe_c.so",
+                        #     "-fplugin-arg-safe_c-mode=warn"
+                        # ],
                         "libraries": [
                             "-lvirt",
                             "-lvirt-qemu",
-                            "-lisofs"
+                            "-lisofs",
+                            "-lxml2"
                         ],
 		}
 	]

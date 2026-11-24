@@ -4,4 +4,8 @@
     <target>
         <format type='qcow2'/>
     </target>
+    <backingStore>
+        <path>/var/lib/libvirt/images/%s</path>
+        <format type='qcow2'/>
+    </backingStore>
 </volume>

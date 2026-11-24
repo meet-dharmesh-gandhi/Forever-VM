@@ -65,6 +65,7 @@ enum NodeTypes {
 	6 // accounts for EPOLLIN, EPOLLOUT, EPOLLRDHUP, EPOLLHUP, EPOLLET, EPOLLERR
 
 #define GATEWAY_IP "10.20.24.62"
+#define STORAGE_IP "10.20.24.40"
 
 #define TEMPLATE_XML_FILE_PATH "./desc.xml"
 #define MEMORY_TEMPLATE_XML_FILE_PATH "./storage-desc.xml"
@@ -126,17 +127,17 @@ enum NodeTypes {
 #define EPOLL_IN (EPOLLIN | EPOLLET)
 #define EPOLL_OUT (EPOLLOUT | EPOLLET)
 
-#define DISCOVER_PORT "8000" // to discover a monitor on start
-#define TASK_PORT "8001" // handles everything with task, tcp and udp sockets
+#define DISCOVER_PORT "8880" // to discover a monitor on start
+#define TASK_PORT "8881" // handles everything with task, tcp and udp sockets
 #define ASSIGNER_GATEWAY_TASK_PORT                                             \
-	"8005" // handles task tcp connections with gateway, only for the assigner
+	"8885" // handles task tcp connections with gateway, only for the assigner
 		   // to use
 #define FIND_PORT                                                              \
-	"8002" // for getting assigner and worker addresses from monitor
-#define HEARTBEAT_PORT "8003" // for heartbeats simply
-#define ROLE_PORT "8004"	  // for promote/demote packets
-#define FILE_PORT "8005"	  // for FS update packets
-#define IDE_PORT "8006"
+	"8882" // for getting assigner and worker addresses from monitor
+#define HEARTBEAT_PORT "8883" // for heartbeats simply
+#define ROLE_PORT "8884"	  // for promote/demote packets
+#define FILE_PORT "8885"	  // for FS update packets
+#define IDE_PORT "8886"
 
 #pragma pack(push, 1)
 

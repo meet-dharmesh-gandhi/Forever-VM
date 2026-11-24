@@ -57,7 +57,7 @@
 	<body>
 		<header>
 			<h2>KVM VM Framebuffer Stream</h2>
-			<div id="status">Connect to ws://10.20.24.62:3000</div>
+			<div id="status">Connect to ws://10.20.24.62:3334</div>
 			<div id="user-inputs">
 				<div>
 					<label for="username">Username:</label>
@@ -144,7 +144,7 @@
 					vmUsername,
 					vmPassword,
 				) {
-					const ip = await fetch("http://10.20.24.62:3000").then(
+					const ip = await fetch("http://10.20.24.62:3334").then(
 						(res) => res.text(),
 					);
 					console.log("ip:", ip);
@@ -160,7 +160,7 @@
 						vmPassword,
 					});
 
-					const port = await fetch(`http://${ip}:3000`, {
+					const port = await fetch(`http://${ip}:3334`, {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json",
@@ -184,19 +184,19 @@
 					}
 
 					scs = new SpiceMainConn({
-						uri: `ws://${ip}:3000/${port.port}`,
+						uri: `ws://${ip}:3334/${port.port}`,
 						password: "",
 						screen_id: "spice-screen",
 						onerror: (e) => {
 							console.error("error in spice", e);
 							statusEl.textContent =
-								"Error connecting to ws://10.20.24.62:3000";
+								"Error connecting to ws://10.20.24.62:3334";
 							userBtn.textContent = "Error starting VM";
 						},
 						onsuccess: () => {
 							console.log("spice succeeded");
 							statusEl.textContent =
-								"Connecting to ws://10.20.24.62:3000...";
+								"Connecting to ws://10.20.24.62:3334...";
 							userBtn.textContent = "Stop VM";
 						},
 					});
@@ -255,7 +255,7 @@
 						start = false;
 
 						statusEl.textContent =
-							"Connecting to ws://10.20.24.62:3000...";
+							"Connecting to ws://10.20.24.62:3334...";
 						userBtn.textContent = "Starting VM...";
 					} else if (scs) {
 						scs.stop();
@@ -263,7 +263,7 @@
 						start = true;
 
 						statusEl.textContent =
-							"Connect to ws://10.20.24.62:3000";
+							"Connect to ws://10.20.24.62:3334";
 						userBtn.textContent = "Start VM";
 					}
 				});

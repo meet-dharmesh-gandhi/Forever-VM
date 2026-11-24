@@ -15,6 +15,8 @@
 #include <execinfo.h>
 #include <fcntl.h>
 #include <ifaddrs.h>
+#include <libxml2/libxml/parser.h>
+#include <libxml2/libxml/tree.h>
 #include <net/if.h>
 #include <net/if_arp.h>
 #include <netinet/ether.h>
