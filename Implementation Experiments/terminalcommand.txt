@@ -1,0 +1,1 @@
+virt-install --name cse540 --vcpus 2 --ram 1024 --disk path=/var/lib/libvirt/images/cse540.qcow2,format=qcow2 --network bridge=virbr0 --cdrom /var/lib/libvirt/images/ubuntu-24.04.5.1-desktop-amd64.iso --os-variant ubuntu24.04 --graphics vnc
